@@ -96,8 +96,7 @@ namespace Final_Report_0507
                     {
                         if (book.ReservationUserId == currentUserId)
                         {
-                            MessageBox.Show("您已預約過此書，現在可借閱！");
-                            book.ReservationUserId = null;
+                            MessageBox.Show("您已預約過此書！");
                         }
                         else
                         {
@@ -127,9 +126,26 @@ namespace Final_Report_0507
                     txtBookId.Focus();
                     return;
                 }
+                else
+                {
+                    if (!string.IsNullOrEmpty(book.ReservationUserId))
+                    {
+                        if (book.ReservationUserId == currentUserId)
+                        {
+                            book.ReservationUserId = null;
+                        }
+                        else
+                        {
+                            MessageBox.Show("該書籍已有他人預約！");
+                            txtBookId.SelectAll();
+                            txtBookId.Focus();
+                            return;
+                        }
+                    }
+                }
 
-                // 顯示書籍資訊
-                lblAuthor.Text = book.Author;
+                    // 顯示書籍資訊
+                    lblAuthor.Text = book.Author;
                 lblPublisher.Text = book.Publisher;
                 lblPublishDate.Text = book.PublishDate.ToShortDateString();
                 lblAgeRating.Text = book.AgeRating;

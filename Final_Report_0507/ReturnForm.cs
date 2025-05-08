@@ -91,7 +91,7 @@ namespace Final_Report_0507
                         {
                             try
                             {
-                                await EmailHelper.SendEmailAsync(
+                                await EmailHelper.SendMailAsync(
                                     reservedUser.Email,
                                     "預約書籍可借閱通知",
                                     $"您預約的書籍《{book.Title}》已可借閱，請儘快辦理借書。"
