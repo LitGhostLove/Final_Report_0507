@@ -173,5 +173,160 @@ namespace Final_Report_0507
                 this.DialogResult = DialogResult.Cancel;
             }
         }
+
+        private void btnImportExcel_Click(object sender, EventArgs e)
+        {
+            using (OpenFileDialog ofd = new OpenFileDialog() { Filter = "Excel Workbook|*.xlsx" })
+            {
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    try
+                    {
+                        var newBooks = new List<Book>();
+
+                        using (var workbook = new ClosedXML.Excel.XLWorkbook(ofd.FileName))
+                        {
+                            var worksheet = workbook.Worksheet(1); // 第一個工作表
+                            var rows = worksheet.RangeUsed().RowsUsed().Skip(1); // 跳過標題列
+
+                            int maxId = books.Count > 0 ? books.Max(b => b.Id) : 0;
+
+                            foreach (var row in rows)
+                            {
+                                var book = new Book
+                                {
+                                    Id = ++maxId,
+                                    Title = row.Cell(1).GetString(),
+                                    Author = row.Cell(2).GetString(),
+                                    Publisher = row.Cell(3).GetString(),
+                                    PublishDate = DateTime.Parse(row.Cell(4).GetString()),
+                                    AgeRating = row.Cell(5).GetString(),
+                                    Borrower = ""
+                                };
+                                newBooks.Add(book);
+                            }
+                        }
+
+                        books.AddRange(newBooks);
+                        JsonStorage<Book>.Save("books.json", books);
+                        LoadBooks();
+                        MessageBox.Show("匯入成功！");
+                    }
+                    catch (System.IO.IOException)
+                    {
+                        MessageBox.Show("無法讀取 Excel 檔案，請確認檔案是否已關閉，或未被其他程式使用。", "檔案被佔用", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
+                    catch (FormatException ex)
+                    {
+                        MessageBox.Show($"發行日格式錯誤，請確認 Excel 中的日期格式。\n\n錯誤訊息：{ex.Message}", "資料格式錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"匯入時發生錯誤：{ex.Message}", "匯入失敗", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
+        }
+
+        private void btnExportExcel_Click(object sender, EventArgs e)
+        {
+            string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+            using (SaveFileDialog sfd = new SaveFileDialog()
+            {
+                Filter = "Excel Workbook|*.xlsx",
+                FileName = $"books_{timestamp}.xlsx"
+            })
+            {
+                if (sfd.ShowDialog() == DialogResult.OK)
+                {
+                    try
+                    {
+                        using (var workbook = new ClosedXML.Excel.XLWorkbook())
+                        {
+                            var worksheet = workbook.Worksheets.Add("Books");
+
+                            // 標題列
+                            worksheet.Cell(1, 1).Value = "編號";
+                            worksheet.Cell(1, 2).Value = "書名";
+                            worksheet.Cell(1, 3).Value = "作者";
+                            worksheet.Cell(1, 4).Value = "出版社";
+                            worksheet.Cell(1, 5).Value = "發行日";
+                            worksheet.Cell(1, 6).Value = "分級";
+                            worksheet.Cell(1, 7).Value = "借書人";
+                            worksheet.Cell(1, 8).Value = "狀態";
+
+                            // 寫入資料
+                            for (int i = 0; i < books.Count; i++)
+                            {
+                                var book = books[i];
+                                worksheet.Cell(i + 2, 1).Value = book.Id;
+                                worksheet.Cell(i + 2, 2).Value = book.Title;
+                                worksheet.Cell(i + 2, 3).Value = book.Author;
+                                worksheet.Cell(i + 2, 4).Value = book.Publisher;
+                                worksheet.Cell(i + 2, 5).Value = book.PublishDate.ToString("yyyy-MM-dd");
+                                worksheet.Cell(i + 2, 6).Value = book.AgeRating;
+                                worksheet.Cell(i + 2, 7).Value = GetUserNameById(book.Borrower);
+                                worksheet.Cell(i + 2, 8).Value = book.Status;
+                            }
+
+                            workbook.SaveAs(sfd.FileName);
+                        }
+
+                        MessageBox.Show("匯出成功！", "完成", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    catch (System.IO.IOException)
+                    {
+                        MessageBox.Show("無法寫入檔案，請確認該檔案未被開啟或使用中。", "檔案被佔用", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"匯出時發生錯誤：{ex.Message}", "匯出失敗", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
+        }
+
+        private void btnImportTemplate_Click(object sender, EventArgs e)
+        {
+            using (SaveFileDialog sfd = new SaveFileDialog() { Filter = "Excel Workbook|*.xlsx", FileName = "匯入格式範本.xlsx" })
+            {
+                if (sfd.ShowDialog() == DialogResult.OK)
+                {
+                    try
+                    {
+                        using (var workbook = new ClosedXML.Excel.XLWorkbook())
+                        {
+                            var worksheet = workbook.Worksheets.Add("匯入範本");
+
+                            // 標題列
+                            worksheet.Cell(1, 1).Value = "書名";
+                            worksheet.Cell(1, 2).Value = "作者";
+                            worksheet.Cell(1, 3).Value = "出版社";
+                            worksheet.Cell(1, 4).Value = "發行日";
+                            worksheet.Cell(1, 5).Value = "分級";
+
+                            // 範例資料（可移除）
+                            worksheet.Cell(2, 1).Value = "C# 從入門到實務";
+                            worksheet.Cell(2, 2).Value = "王小明";
+                            worksheet.Cell(2, 3).Value = "資訊出版社";
+                            worksheet.Cell(2, 4).Value = "2023-05-01";
+                            worksheet.Cell(2, 5).Value = "普遍級";
+
+                            // 優化樣式（可選）
+                            worksheet.Range("A1:E1").Style.Font.Bold = true;
+                            worksheet.Columns().AdjustToContents();
+
+                            workbook.SaveAs(sfd.FileName);
+                        }
+
+                        MessageBox.Show("匯入格式範本已建立成功！", "完成", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"建立範本時發生錯誤：{ex.Message}", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
+        }
     }
 }

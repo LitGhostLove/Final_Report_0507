@@ -50,6 +50,9 @@
             btnAdd = new Button();
             btnEdit = new Button();
             btnDelete = new Button();
+            btnExportExcel = new Button();
+            btnImportExcel = new Button();
+            btnImportTemplate = new Button();
             ((System.ComponentModel.ISupportInitialize)dgvBooks).BeginInit();
             SuspendLayout();
             // 
@@ -199,11 +202,44 @@
             btnDelete.UseVisualStyleBackColor = true;
             btnDelete.Click += btnDelete_Click;
             // 
+            // btnExportExcel
+            // 
+            btnExportExcel.Location = new Point(399, 548);
+            btnExportExcel.Name = "btnExportExcel";
+            btnExportExcel.Size = new Size(150, 50);
+            btnExportExcel.TabIndex = 7;
+            btnExportExcel.Text = "匯出";
+            btnExportExcel.UseVisualStyleBackColor = true;
+            btnExportExcel.Click += btnExportExcel_Click;
+            // 
+            // btnImportExcel
+            // 
+            btnImportExcel.Location = new Point(217, 548);
+            btnImportExcel.Name = "btnImportExcel";
+            btnImportExcel.Size = new Size(150, 50);
+            btnImportExcel.TabIndex = 6;
+            btnImportExcel.Text = "匯入";
+            btnImportExcel.UseVisualStyleBackColor = true;
+            btnImportExcel.Click += btnImportExcel_Click;
+            // 
+            // btnImportTemplate
+            // 
+            btnImportTemplate.Location = new Point(35, 548);
+            btnImportTemplate.Name = "btnImportTemplate";
+            btnImportTemplate.Size = new Size(150, 50);
+            btnImportTemplate.TabIndex = 8;
+            btnImportTemplate.Text = "製作匯入範本";
+            btnImportTemplate.UseVisualStyleBackColor = true;
+            btnImportTemplate.Click += btnImportTemplate_Click;
+            // 
             // BookForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(584, 561);
+            ClientSize = new Size(584, 611);
+            Controls.Add(btnImportTemplate);
+            Controls.Add(btnExportExcel);
+            Controls.Add(btnImportExcel);
             Controls.Add(btnDelete);
             Controls.Add(btnEdit);
             Controls.Add(btnAdd);
@@ -240,5 +276,8 @@
         private DataGridViewTextBoxColumn AgeRating;
         private DataGridViewTextBoxColumn Status;
         private DataGridViewTextBoxColumn Borrower;
+        private Button btnExportExcel;
+        private Button btnImportExcel;
+        private Button btnImportTemplate;
     }
 }
