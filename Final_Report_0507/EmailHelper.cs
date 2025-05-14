@@ -12,7 +12,7 @@ namespace Final_Report_0507
         public static async Task SendMailAsync(string toEmail, string subject, string body)
         {
             var message = new MailMessage();
-            message.From = new MailAddress(""); // 換成你的寄件者
+            message.From = new MailAddress("");
             message.To.Add(toEmail);
             message.Subject = subject;
             message.Body = body;
@@ -22,7 +22,7 @@ namespace Final_Report_0507
                 smtpClient.Credentials = new NetworkCredential("", "");
                 smtpClient.EnableSsl = true;
 
-                await smtpClient.SendMailAsync(message);  // 🔹 非同步寄信
+                await smtpClient.SendMailAsync(message);
             }
         }
     }

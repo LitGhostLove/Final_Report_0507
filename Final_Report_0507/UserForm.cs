@@ -78,7 +78,6 @@ namespace Final_Report_0507
                 return;
             }
 
-            // 讀取書籍資料
             var books = JsonStorage<Book>.Load("books.json") ?? new List<Book>();
 
             foreach (var user in selected)
@@ -88,7 +87,7 @@ namespace Final_Report_0507
                 if (hasUnreturnedBooks)
                 {
                     MessageBox.Show($"使用者 {user.Name} 尚有書籍未歸還，無法刪除。", "警告", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return; // 取消整體刪除流程
+                    return;
                 }
             }
 
@@ -137,7 +136,7 @@ namespace Final_Report_0507
         {
             if (e.KeyCode == Keys.Escape)
             {
-                e.SuppressKeyPress = true; // 防止嗶聲
+                e.SuppressKeyPress = true;
                 this.DialogResult = DialogResult.Cancel;
             }
         }

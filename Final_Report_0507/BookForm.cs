@@ -13,7 +13,7 @@ namespace Final_Report_0507
     public partial class BookForm : Form
     {
         private List<Book> books = new List<Book>();
-        private List<User> users = new List<User>(); // 載入用戶資料
+        private List<User> users = new List<User>();
 
         public BookForm()
         {
@@ -158,7 +158,7 @@ namespace Final_Report_0507
                         Publisher = row.Cells["Publisher"].Value?.ToString() ?? "",
                         PublishDate = DateTime.TryParse(row.Cells["PublishDate"].Value?.ToString(), out DateTime date) ? date : DateTime.MinValue,
                         AgeRating = row.Cells["AgeRating"].Value?.ToString() ?? "",
-                        Borrower = row.Cells["Borrower"].Value?.ToString() ?? "" // 若要寫入 JSON 時保留 ID，這裡就不能轉換成姓名
+                        Borrower = row.Cells["Borrower"].Value?.ToString() ?? ""
                     });
                 }
             }
@@ -169,7 +169,7 @@ namespace Final_Report_0507
         {
             if (e.KeyCode == Keys.Escape)
             {
-                e.SuppressKeyPress = true; // 防止嗶聲
+                e.SuppressKeyPress = true;
                 this.DialogResult = DialogResult.Cancel;
             }
         }
@@ -186,8 +186,8 @@ namespace Final_Report_0507
 
                         using (var workbook = new ClosedXML.Excel.XLWorkbook(ofd.FileName))
                         {
-                            var worksheet = workbook.Worksheet(1); // 第一個工作表
-                            var rows = worksheet.RangeUsed().RowsUsed().Skip(1); // 跳過標題列
+                            var worksheet = workbook.Worksheet(1);
+                            var rows = worksheet.RangeUsed().RowsUsed().Skip(1);
 
                             int maxId = books.Count > 0 ? books.Max(b => b.Id) : 0;
 
@@ -305,14 +305,13 @@ namespace Final_Report_0507
                             worksheet.Cell(1, 4).Value = "發行日";
                             worksheet.Cell(1, 5).Value = "分級";
 
-                            // 範例資料（可移除）
+                            // 範例資料
                             worksheet.Cell(2, 1).Value = "C# 從入門到實務";
                             worksheet.Cell(2, 2).Value = "王小明";
                             worksheet.Cell(2, 3).Value = "資訊出版社";
                             worksheet.Cell(2, 4).Value = "2023-05-01";
                             worksheet.Cell(2, 5).Value = "普遍級";
 
-                            // 優化樣式（可選）
                             worksheet.Range("A1:E1").Style.Font.Bold = true;
                             worksheet.Columns().AdjustToContents();
 

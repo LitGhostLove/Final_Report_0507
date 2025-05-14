@@ -105,8 +105,8 @@ namespace Final_Report_0507
         {
             if (e.KeyCode == Keys.Escape)
             {
-                e.SuppressKeyPress = true; // 防止嗶聲
-                btnCancel_Click(sender, EventArgs.Empty); // 直接呼叫取消事件
+                e.SuppressKeyPress = true;
+                btnCancel_Click(sender, EventArgs.Empty);
             }
         }
     }
