@@ -34,6 +34,7 @@
             DataGridViewCellStyle dataGridViewCellStyle4 = new DataGridViewCellStyle();
             DataGridViewCellStyle dataGridViewCellStyle5 = new DataGridViewCellStyle();
             DataGridViewCellStyle dataGridViewCellStyle6 = new DataGridViewCellStyle();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(BookForm));
             cmbSearchField = new ComboBox();
             txtSearchKeyword = new TextBox();
             label1 = new Label();
@@ -247,6 +248,7 @@
             Controls.Add(label1);
             Controls.Add(txtSearchKeyword);
             Controls.Add(cmbSearchField);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             KeyPreview = true;
             Name = "BookForm";
             Text = "書籍資料";

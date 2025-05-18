@@ -32,6 +32,7 @@
             DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
             DataGridViewCellStyle dataGridViewCellStyle3 = new DataGridViewCellStyle();
             DataGridViewCellStyle dataGridViewCellStyle4 = new DataGridViewCellStyle();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(BorrowForm));
             label1 = new Label();
             txtIdNumber = new TextBox();
             label2 = new Label();
@@ -309,6 +310,7 @@
             Controls.Add(label2);
             Controls.Add(txtIdNumber);
             Controls.Add(label1);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             KeyPreview = true;
             Name = "BorrowForm";
             Text = "借書";

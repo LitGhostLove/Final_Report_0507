@@ -32,6 +32,7 @@
             DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
             DataGridViewCellStyle dataGridViewCellStyle3 = new DataGridViewCellStyle();
             DataGridViewCellStyle dataGridViewCellStyle4 = new DataGridViewCellStyle();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UserForm));
             label1 = new Label();
             txtSearch = new TextBox();
             btnDelete = new Button();
@@ -163,6 +164,7 @@
             Controls.Add(dgvUsers);
             Controls.Add(label1);
             Controls.Add(txtSearch);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             KeyPreview = true;
             Name = "UserForm";
             Text = "用戶管理";
