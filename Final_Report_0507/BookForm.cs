@@ -26,10 +26,10 @@ namespace Final_Report_0507
             LoadBooks();
         }
 
-        private void LoadBooks()
+        private async void LoadBooks()
         {
-            books = JsonStorage<Book>.Load("books.json");
-            users = JsonStorage<User>.Load("users.json");
+            books = await JsonStorage<Book>.LoadAsync();
+            users = await JsonStorage<User>.LoadAsync();
 
             dgvBooks.DataSource = null;
             dgvBooks.Rows.Clear();
@@ -121,7 +121,7 @@ namespace Final_Report_0507
             }
         }
 
-        private void btnDelete_Click(object sender, EventArgs e)
+        private async void btnDelete_Click(object sender, EventArgs e)
         {
             var selected = GetSelectedBooks();
             if (selected.Count == 0)
@@ -137,7 +137,7 @@ namespace Final_Report_0507
                     books.RemoveAll(b => b.Id == book.Id);
                 }
 
-                JsonStorage<Book>.Save("books.json", books);
+                await JsonStorage<Book>.SaveAsync(books);
                 LoadBooks();
             }
         }
@@ -174,7 +174,7 @@ namespace Final_Report_0507
             }
         }
 
-        private void btnImportExcel_Click(object sender, EventArgs e)
+        private async void btnImportExcel_Click(object sender, EventArgs e)
         {
             using (OpenFileDialog ofd = new OpenFileDialog() { Filter = "Excel Workbook|*.xlsx" })
             {
@@ -208,7 +208,7 @@ namespace Final_Report_0507
                         }
 
                         books.AddRange(newBooks);
-                        JsonStorage<Book>.Save("books.json", books);
+                        await JsonStorage<Book>.SaveAsync(books);
                         LoadBooks();
                         MessageBox.Show("匯入成功！");
                     }

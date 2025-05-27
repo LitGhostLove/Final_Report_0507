@@ -1,27 +1,44 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
-namespace Final_Report_0507
+public static class JsonStorage<T>
 {
-    public static class JsonStorage<T>
+    private static readonly string BaseUrl = "http://litghostserver.ddns.net:5000/";
+    private static readonly string FileName = typeof(T).Name.ToLower() + "s.json";
+    private static string FullUrl => BaseUrl + FileName;
+
+    public static async Task<List<T>> LoadAsync()
     {
-        public static List<T> Load(string path)
-        {
-            if (!File.Exists(path))
-                return new List<T>();
+        using HttpClient client = new HttpClient();
+        string json = await client.GetStringAsync(FullUrl);
+        return JsonSerializer.Deserialize<List<T>>(json);
+    }
 
-            var json = File.ReadAllText(path);
-            return JsonSerializer.Deserialize<List<T>>(json) ?? new List<T>();
-        }
+    public static async Task SaveAsync(List<T> data)
+    {
+        string json = JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true });
+        using HttpClient client = new HttpClient();
+        var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-        public static void Save(string path, List<T> items)
+        // 嘗試 PUT，若失敗改 POST
+        var response = await client.PutAsync(FullUrl, content);
+
+        if (!response.IsSuccessStatusCode)
         {
-            var json = JsonSerializer.Serialize(items, new JsonSerializerOptions { WriteIndented = true });
-            File.WriteAllText(path, json);
+            // 如果是 MethodNotAllowed，嘗試 POST
+            if (response.StatusCode == System.Net.HttpStatusCode.MethodNotAllowed)
+            {
+                response = await client.PostAsync(FullUrl, content);
+            }
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception($"Failed to upload (tried PUT and POST): {response.StatusCode}");
+            }
         }
     }
 }

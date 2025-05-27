@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
+using static System.Reflection.Metadata.BlobBuilder;
 
 namespace Final_Report_0507
 {
@@ -14,16 +15,16 @@ namespace Final_Report_0507
             InitializeComponent();
         }
 
-        private void UserForm_Load(object sender, EventArgs e)
+        private async void UserForm_Load(object sender, EventArgs e)
         {
-            users = JsonStorage<User>.Load("users.json") ?? new List<User>();
+            users = await JsonStorage<User>.LoadAsync() ?? new List<User>();
             LoadUsers();
         }
 
-        private void LoadUsers(List<User>? source = null)
+        private async void LoadUsers(List<User>? source = null)
         {
             dgvUsers.Rows.Clear();
-
+            users = await JsonStorage<User>.LoadAsync() ?? new List<User>();
             var listToShow = source ?? users;
 
             foreach (var user in listToShow)
@@ -39,18 +40,18 @@ namespace Final_Report_0507
             }
         }
 
-        private void BtnAdd_Click(object sender, EventArgs e)
+        private async void BtnAdd_Click(object sender, EventArgs e)
         {
             var dialog = new UserEditForm(users);
             if (dialog.ShowDialog() == DialogResult.OK)
             {
                 users.Add(dialog.UserData);
-                JsonStorage<User>.Save("users.json", users);
+                await JsonStorage<User>.SaveAsync(users);
                 LoadUsers();
             }
         }
 
-        private void BtnEdit_Click(object sender, EventArgs e)
+        private async void BtnEdit_Click(object sender, EventArgs e)
         {
             var selected = GetSelectedUsers();
             if (selected.Count != 1)
@@ -64,12 +65,13 @@ namespace Final_Report_0507
             {
                 var index = users.FindIndex(u => u.IdNumber == selected[0].IdNumber);
                 users[index] = dialog.UserData;
-                JsonStorage<User>.Save("users.json", users);
+                await JsonStorage<User>.SaveAsync(users);
+
                 LoadUsers();
             }
         }
 
-        private void BtnDelete_Click(object sender, EventArgs e)
+        private async void BtnDelete_Click(object sender, EventArgs e)
         {
             var selected = GetSelectedUsers();
             if (selected.Count == 0)
@@ -78,7 +80,7 @@ namespace Final_Report_0507
                 return;
             }
 
-            var books = JsonStorage<Book>.Load("books.json") ?? new List<Book>();
+            var books = await JsonStorage<Book>.LoadAsync() ?? new List<Book>();
 
             foreach (var user in selected)
             {
@@ -94,7 +96,7 @@ namespace Final_Report_0507
             if (MessageBox.Show("確定要刪除選取的使用者？", "確認", MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
                 users = users.Except(selected).ToList();
-                JsonStorage<User>.Save("users.json", users);
+                await JsonStorage<User>.SaveAsync(users);
                 LoadUsers();
             }
         }

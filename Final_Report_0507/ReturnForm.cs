@@ -15,13 +15,13 @@ namespace Final_Report_0507
             InitializeComponent();
         }
 
-        private void txtIdNumber_KeyDown(object sender, KeyEventArgs e)
+        private async void txtIdNumber_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
             {
                 e.SuppressKeyPress = true;
                 string idNumber = txtIdNumber.Text.Trim();
-                var users = JsonStorage<User>.Load("users.json");
+                var users = await JsonStorage<User>.LoadAsync();
                 currentUser = users.FirstOrDefault(u => u.IdNumber == idNumber);
 
                 if (currentUser == null)
@@ -34,7 +34,7 @@ namespace Final_Report_0507
 
                 lblName.Text = currentUser.Name;
 
-                books = JsonStorage<Book>.Load("books.json");
+                books = await JsonStorage<Book>.LoadAsync();
                 var borrowedBooks = books
                     .Where(b => b.Borrower == idNumber)
                     .ToList();
@@ -74,8 +74,8 @@ namespace Final_Report_0507
                 return;
             }
 
-            var allBooks = JsonStorage<Book>.Load("books.json");
-            var users = JsonStorage<User>.Load("users.json");
+            var allBooks = await JsonStorage<Book>.LoadAsync();
+            var users = await JsonStorage<User>.LoadAsync();
 
             foreach (var book in allBooks)
             {
@@ -106,7 +106,7 @@ namespace Final_Report_0507
                 }
             }
 
-            JsonStorage<Book>.Save("books.json", allBooks);
+            await JsonStorage<Book>.SaveAsync(allBooks);
             MessageBox.Show("還書成功！");
             this.Close();
         }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Final_Report_0507
@@ -17,13 +18,13 @@ namespace Final_Report_0507
             InitializeComponent();
         }
 
-        private void txtIdNumber_KeyDown(object sender, KeyEventArgs e)
+        private async void txtIdNumber_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
             {
                 e.SuppressKeyPress = true;
                 string idNumber = txtIdNumber.Text.Trim();
-                var users = JsonStorage<User>.Load("users.json");
+                var users = await JsonStorage<User>.LoadAsync();
                 var user = users.FirstOrDefault(u => u.IdNumber == idNumber);
 
                 if (user != null)
@@ -33,7 +34,7 @@ namespace Final_Report_0507
                     groupBox1.Visible = true;
                     txtBookId.Focus();
                     currentUserId = user.IdNumber;
-                    currentUser = user; // 儲存當前用戶資訊以供年齡判斷
+                    currentUser = user;
                 }
                 else
                 {
@@ -44,7 +45,7 @@ namespace Final_Report_0507
             }
         }
 
-        private void txtBookId_KeyDown(object sender, KeyEventArgs e)
+        private async void txtBookId_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
             {
@@ -66,7 +67,7 @@ namespace Final_Report_0507
                     return;
                 }
 
-                books = JsonStorage<Book>.Load("books.json");
+                books = await JsonStorage<Book>.LoadAsync();
                 var book = books.FirstOrDefault(b => b.Id == bookId);
 
                 if (book == null)
@@ -77,17 +78,12 @@ namespace Final_Report_0507
                     return;
                 }
 
-                // 年齡限制判斷
-                if (book.AgeRating == "限制級")
+                if (book.AgeRating == "限制級" && CalculateAge(currentUser.Birthday) < 18)
                 {
-                    int age = CalculateAge(currentUser.Birthday);
-                    if (age < 18)
-                    {
-                        MessageBox.Show("該書籍為限制級，您的年齡暫時無法借閱！");
-                        txtBookId.SelectAll();
-                        txtBookId.Focus();
-                        return;
-                    }
+                    MessageBox.Show("該書籍為限制級，您的年齡暫時無法借閱！");
+                    txtBookId.SelectAll();
+                    txtBookId.Focus();
+                    return;
                 }
 
                 if (!string.IsNullOrWhiteSpace(book.Borrower))
@@ -109,7 +105,7 @@ namespace Final_Report_0507
                         if (result == DialogResult.Yes)
                         {
                             book.ReservationUserId = currentUserId;
-                            JsonStorage<Book>.Save("books.json", books);
+                            await JsonStorage<Book>.SaveAsync(books);
                             MessageBox.Show("預約成功！");
                         }
                         else
@@ -144,13 +140,12 @@ namespace Final_Report_0507
                     }
                 }
 
-                    // 顯示書籍資訊
-                    lblAuthor.Text = book.Author;
+                // 顯示書籍資訊
+                lblAuthor.Text = book.Author;
                 lblPublisher.Text = book.Publisher;
                 lblPublishDate.Text = book.PublishDate.ToShortDateString();
                 lblAgeRating.Text = book.AgeRating;
 
-                // 加入表格與已選書單
                 dgvBooks.Rows.Add(book.Id, book.Title, book.Author, book.Publisher, book.PublishDate.ToShortDateString(), book.AgeRating);
                 selectedBooks.Add(book);
 
@@ -167,10 +162,10 @@ namespace Final_Report_0507
             return age;
         }
 
-        private void btnSave_Click(object sender, EventArgs e)
+        private async void btnSave_Click(object sender, EventArgs e)
         {
             string idNumber = txtIdNumber.Text.Trim();
-            var allBooks = JsonStorage<Book>.Load("books.json");
+            var allBooks = await JsonStorage<Book>.LoadAsync();
 
             foreach (var borrowedBook in selectedBooks)
             {
@@ -181,7 +176,7 @@ namespace Final_Report_0507
                 }
             }
 
-            JsonStorage<Book>.Save("books.json", allBooks);
+            await JsonStorage<Book>.SaveAsync(allBooks);
             MessageBox.Show("借書成功！");
             this.Close();
         }

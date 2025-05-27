@@ -28,7 +28,7 @@ namespace Final_Report_0507
             isEditMode = true;
         }
 
-        private void BookEditForm_Load(object sender, EventArgs e)
+        private async void BookEditForm_Load(object sender, EventArgs e)
         {
             if (isEditMode && editingBook != null)
             {
@@ -42,7 +42,7 @@ namespace Final_Report_0507
             else
             {
                 // 取得新 ID
-                var books = JsonStorage<Book>.Load("books.json");
+                var books = await JsonStorage<Book>.LoadAsync();
                 int nextId = books.Count > 0 ? books[^1].Id + 1 : 1;
 
                 txtId.Text = nextId.ToString();
@@ -51,7 +51,7 @@ namespace Final_Report_0507
             txtId.ReadOnly = true;
         }
 
-        private void BtnSave_Click(object sender, EventArgs e)
+        private async void BtnSave_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(txtTitle.Text) ||
                 string.IsNullOrWhiteSpace(txtAuthor.Text))
@@ -60,7 +60,7 @@ namespace Final_Report_0507
                 return;
             }
 
-            var books = JsonStorage<Book>.Load("books.json");
+            var books = await JsonStorage<Book>.LoadAsync();
 
             if (isEditMode && editingBook != null)
             {
@@ -88,7 +88,7 @@ namespace Final_Report_0507
                 books.Add(newBook);
             }
 
-            JsonStorage<Book>.Save("books.json", books);
+            await JsonStorage<Book>.SaveAsync(books);
             this.DialogResult = DialogResult.OK;
         }
 
