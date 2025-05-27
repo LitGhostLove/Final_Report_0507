@@ -180,6 +180,11 @@ namespace Final_Report_0507
                 if (target != null)
                 {
                     target.Borrower = idNumber;
+
+                    if (target.ReservationUserId == idNumber)
+                    {
+                        target.ReservationUserId = null;
+                    }
                 }
             }
 
