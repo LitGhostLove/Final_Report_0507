@@ -101,21 +101,28 @@ namespace Final_Report_0507
                     }
                     else
                     {
-                        var result = MessageBox.Show("該書籍已被借出！您要預約嗎？", "預約提示", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                        if (result == DialogResult.Yes)
+                        if (book.Borrower != currentUserId)
                         {
-                            book.ReservationUserId = currentUserId;
-                            await JsonStorage<Book>.SaveAsync(books);
-                            MessageBox.Show("預約成功！");
+                            var result = MessageBox.Show("該書籍已被借出！您要預約嗎？", "預約提示", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                            if (result == DialogResult.Yes)
+                            {
+                                book.ReservationUserId = currentUserId;
+                                await JsonStorage<Book>.SaveAsync(books);
+                                MessageBox.Show("預約成功！");
+                            }
+                            else
+                            {
+                                MessageBox.Show("已取消預約操作。");
+                            }
+
+                            txtBookId.SelectAll();
+                            txtBookId.Focus();
+                            return;
                         }
                         else
                         {
-                            MessageBox.Show("已取消預約操作。");
+                            MessageBox.Show("該書籍已被您借閱。");
                         }
-
-                        txtBookId.SelectAll();
-                        txtBookId.Focus();
-                        return;
                     }
 
                     txtBookId.SelectAll();
